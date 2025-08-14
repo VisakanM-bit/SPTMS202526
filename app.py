@@ -67,4 +67,4 @@ def send_email(to_email, link):
         server.sendmail(sender_email, to_email, message)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
