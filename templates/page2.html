@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Public Transport Tracker</title>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #e9ecef;
+  }
+
+  /* Header style like first code */
+  header {
+    background-color: rgba(233, 235, 238, 0.85);
+    color: black;
+    padding: 20px 25px;
+    border-radius: 0 0 8px 8px;
+    text-align: left;
+  }
+  header .emoji {
+    font-size: 40px;
+    margin-right: 10px;
+  }
+  header .greeting {
+    font-size: 52px;
+    font-weight: bold;
+    color: rgb(1,1,22);
+  }
+  header .welcome-text {
+    font-size: 34px;
+    margin-top: 5px;
+    color: black;
+  }
+  header .sub-text {
+    font-size: 32px;
+    color: black;
+  }
+
+  .main-container {
+    display: flex;
+    height: calc(100% - 160px); /* adjust for header height */
+    gap: 20px;
+    padding: 10px 20px 20px 20px;
+  }
+
+  #leftPanel, #rightPanel {
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    background-color: white;
+    padding: 15px;
+  }
+
+  #map {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  #leftPanel {
+    flex: 1.3;
+    height: 100%;
+  }
+
+  #rightPanel {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+
+  #rightPanel h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #1a73e8;
+    margin-bottom: 15px;
+  }
+
+  #vehicleSelect {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    background-color: #1a73e8;
+    color: white;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background-color: #1558b0;
+  }
+
+  #vehicleDetails {
+    flex: 1;
+    background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
+    border-radius: 12px;
+    padding: 20px;
+    display: none;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  #vehicleDetails p {
+    margin: 8px 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="emoji">👋</span>
+  <span class="greeting">Hi, {{ user }}</span>
+  <div class="welcome-text">Welcome to Bus Tracking Systems 🚌</div>
+  <div class="sub-text">Real-time tracking & smooth travel</div>
+</header>
+
+<div class="main-container">
+  <!-- Left Panel: Map -->
+  <div id="leftPanel">
+    <div id="map"></div>
+  </div>
+
+  <!-- Right Panel: Vehicle Info -->
+  <div id="rightPanel">
+    <h2>Vehicle Info</h2>
+    <select id="vehicleSelect">
+      <option value="">-- Select Vehicle --</option>
+      <option value="20A">Remote Car</option>
+      <option value="90A">20A</option>
+      <option value="KMS">90A</option>
+      <option value="SRT">SRT</option>
+    </select>
+    <button onclick="startTracking()">Start Tracking</button>
+
+    <div id="vehicleDetails">
+      <p><strong>Bus Name:</strong> 20A</p>
+      <p><strong>Source:</strong> Central Bus Stand</p>
+      <p><strong>Destination:</strong> Saibaba Colony</p>
+      <p><strong>Timing:</strong> 7:30 AM - 10:30 AM</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  var map = L.map('map').setView([11.0168, 76.9558], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  var marker = L.marker([11.0168, 76.9558]).addTo(map);
+  var path = L.polyline([], {color: 'red'}).addTo(map);
+
+  var gpsInterval;
+
+  async function updateGPS() {
+    try {
+      var channelID = "3051314";
+      var apiKey = "Y0GSME0D11BGJ53X9";
+      var latField = 1;
+      var lonField = 2;
+
+      let url = `https://api.thingspeak.com/channels/${channelID}/feeds.json?results=20&api_key=${apiKey}`;
+      let response = await fetch(url);
+      let data = await response.json();
+
+      let feeds = data.feeds;
+      let coordinates = [];
+
+      feeds.forEach(feed => {
+        let lat = parseFloat(feed[`field${latField}`]);
+        let lon = parseFloat(feed[`field${lonField}`]);
+        if (!isNaN(lat) && !isNaN(lon)) coordinates.push([lat, lon]);
+      });
+
+      if (coordinates.length > 0) {
+        let latest = coordinates[coordinates.length - 1];
+        marker.setLatLng(latest);
+        map.setView(latest, 15);
+        marker.bindPopup(`<b>Lat:</b> ${latest[0]}<br><b>Lon:</b> ${latest[1]}<br><b>Signals:</b> ${coordinates.length}`).openPopup();
+        path.setLatLngs(coordinates);
+      }
+    } catch (err) {
+      console.error("GPS fetch error:", err);
+    }
+  }
+
+  function startTracking() {
+    let vehicle = document.getElementById("vehicleSelect").value;
+    if (!vehicle) {
+      alert("Please select a vehicle!");
+      return;
+    }
+
+    let details = document.getElementById("vehicleDetails");
+    details.style.display = "block";
+
+    if(vehicle === "20A") {
+      details.innerHTML = `<p><strong>Bus Name:</strong> Remote car</p>
+                           <p><strong>Source:</strong> Central Bus Stand</p>
+                           <p><strong>Destination:</strong> Saibaba Colony</p>
+                           <p><strong>Timing:</strong> 7:30 AM - 10:30 AM</p>`;
+    } else if(vehicle === "90A") {
+      details.innerHTML = `<p><strong>Bus Name:</strong> 90A</p>
+                           <p><strong>Source:</strong> Town Hall</p>
+                           <p><strong>Destination:</strong> Gandhipuram</p>
+                           <p><strong>Timing:</strong> 8:00 AM - 11:00 AM</p>`;
+    } else if(vehicle === "KMS") {
+      details.innerHTML = `<p><strong>Bus Name:</strong> KMS</p>
+                           <p><strong>Source:</strong> Coimbatore Junction</p>
+                           <p><strong>Destination:</strong> Peelamedu</p>
+                           <p><strong>Timing:</strong> 9:00 AM - 12:00 PM</p>`;
+    } else if(vehicle === "SRT") {
+      details.innerHTML = `<p><strong>Bus Name:</strong> SRT</p>
+                           <p><strong>Source:</strong> Saibaba Colony</p>
+                           <p><strong>Destination:</strong> RS Puram</p>
+                           <p><strong>Timing:</strong> 10:00 AM - 1:00 PM</p>`;
+    }
+
+    if (gpsInterval) clearInterval(gpsInterval);
+    updateGPS();
+    gpsInterval = setInterval(updateGPS, 10000);
+  }
+</script>
+
+</body>
+</html>
