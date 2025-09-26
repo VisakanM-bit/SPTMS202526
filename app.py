@@ -12,7 +12,7 @@ app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
 
 # Replace with your Render domain
 # For local testing
-BASE_URL = "http://127.0.0.1:5000"
+BASE_URL = "https://sptms202526.onrender.com/"
 
 
 # Serializer for token generation
