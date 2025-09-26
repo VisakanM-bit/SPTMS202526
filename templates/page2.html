@@ -13,139 +13,100 @@
   html, body {
     height: 100%;
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #e9ecef;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                url('{{ url_for("static", filename="image.png") }}') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
   }
 
-  /* Header */
   header {
-    background-color: rgba(233, 235, 238, 0.95);
-    color: black;
-    padding: 15px 20px;
-    border-radius: 0 0 8px 8px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(6px);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     text-align: left;
+    margin: 10px 15px;
   }
-  header .emoji {
-    font-size: 30px;
-    margin-right: 8px;
-  }
-  header .greeting {
-    font-size: 32px;
-    font-weight: bold;
-    color: rgb(1,1,22);
-  }
-  header .welcome-text {
-    font-size: 20px;
-    margin-top: 5px;
-    color: black;
-  }
-  header .sub-text {
-    font-size: 18px;
-    color: black;
-  }
+  header .emoji { font-size: 30px; margin-right: 8px; }
+  header .greeting { font-size: 36px; font-weight: bold; color: #fff; text-shadow: 0 0 6px rgba(0,0,0,0.5); }
+  header .welcome-text { font-size: 22px; margin-top: 5px; color: #fff; }
+  header .sub-text { font-size: 18px; color: #fff; }
 
-  /* Layout */
-  .main-container {
-    display: flex;
-    flex-wrap: wrap;
-    height: calc(100% - 130px);
-    gap: 15px;
-    padding: 10px 15px 20px 15px;
-  }
-
+  .main-container { display: flex; flex-wrap: wrap; height: calc(100% - 140px); gap: 15px; padding: 10px 15px 20px 15px; }
+  
   #leftPanel, #rightPanel {
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    background-color: white;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    backdrop-filter: blur(6px);
     padding: 15px;
   }
 
-  #map {
-    height: 100%;
-    width: 100%;
-    border-radius: 10px;
-    min-height: 350px;
-  }
+  #leftPanel { flex: 1.7; min-width: 280px; background: rgba(255,255,255,0.1); }
+  #map { height: 100%; width: 100%; border-radius: 12px; min-height: 480px; box-shadow: inset 0 0 8px rgba(255,255,255,0.15); }
 
-  #leftPanel {
-    flex: 1.5;
-    min-width: 280px;
-  }
-
+  /* Right Panel with bus background */
   #rightPanel {
     flex: 1;
-    min-width: 260px;
+    min-width: 280px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     overflow-y: auto;
-  }
-
-  #rightPanel h2 {
-    text-align: center;
-    font-size: 22px;
-    color: #1a73e8;
-    margin-bottom: 12px;
-  }
-
-  #vehicleSelect {
-    width: 100%;
-    padding: 10px;
-    font-size: 15px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    margin-bottom: 12px;
-  }
-
-  button {
-    width: 100%;
-    padding: 12px;
-    font-size: 15px;
-    border-radius: 8px;
-    border: none;
-    background-color: #1a73e8;
-    color: white;
-    cursor: pointer;
-    margin-bottom: 15px;
-    font-weight: bold;
-  }
-
-  button:hover {
-    background-color: #1558b0;
-  }
-
-  #vehicleDetails {
-    flex: 1;
-    background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
-    border-radius: 10px;
+    background: url('{{ url_for("static", filename="bus_bg.png") }}') no-repeat center center;
+    background-size: cover;
+    border-radius: 12px;
+    position: relative;
     padding: 15px;
-    display: none;
-    font-size: 15px;
-    line-height: 1.6;
   }
 
-  #vehicleDetails p {
-    margin: 6px 0;
+  #rightPanel::before { content: none; } /* remove overlay */
+
+  #rightPanel > * {
+    position: relative;
+    z-index: 1;
+    background: rgba(255,255,255,0.05); /* subtle transparent background */
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    color: #fff;
   }
 
-  /* Mobile */
+  .tab-container { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .tab {
+    flex: 1;
+    padding: 10px;
+    background: rgba(255,255,255,0.1);
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  .tab.active { background: linear-gradient(90deg,#ff9800,#e65100); box-shadow: 0 4px 12px rgba(255,152,0,0.6); color: #fff; }
+  .tab:hover { transform: scale(1.05); }
+
+  .info-card {
+    background: rgba(255,255,255,0.05); 
+    backdrop-filter: none;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    box-shadow: none;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  .crowd-container { display: flex; align-items: flex-end; justify-content: space-around; height: 180px; margin-top: 15px; }
+  .crowd-bar-vertical { width: 40px; height: 100%; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: flex-end; overflow: hidden; flex-direction: column; justify-content: flex-end; }
+  .crowd-fill-vertical { width: 100%; background: linear-gradient(to top,#ff9800,#e65100); border-radius: 8px 8px 0 0; display: flex; align-items: flex-start; justify-content: center; font-size: 12px; color:#fff; font-weight:bold; transition: height 0.6s ease; padding-top:2px; }
+
   @media (max-width: 768px) {
-    header .greeting {
-      font-size: 24px;
-    }
-    header .welcome-text {
-      font-size: 18px;
-    }
-    header .sub-text {
-      font-size: 16px;
-    }
-    .main-container {
-      flex-direction: column;
-      height: auto;
-    }
-    #map {
-      min-height: 300px;
-    }
+    header .greeting { font-size: 28px; }
+    header .welcome-text { font-size: 18px; }
+    header .sub-text { font-size: 16px; }
+    .main-container { flex-direction: column; height: auto; }
+    #map { min-height: 350px; }
   }
 </style>
 </head>
@@ -159,114 +120,96 @@
 </header>
 
 <div class="main-container">
-  <!-- Left Panel: Map -->
   <div id="leftPanel">
     <div id="map"></div>
   </div>
 
-  <!-- Right Panel: Vehicle Info -->
   <div id="rightPanel">
     <h2>Vehicle Info</h2>
-    <select id="vehicleSelect">
-      <option value="">-- Select Vehicle --</option>
-      <option value="RemoteCar">Remote Car</option>
-      <option value="20A">20A</option>
-      <option value="90A">90A</option>
-      <option value="KMS">KMS</option>
-      <option value="SRT">SRT</option>
-    </select>
-    <button onclick="startTracking()">Start Tracking</button>
+    <div class="tab-container">
+      <div class="tab active" data-vehicle="RemoteCar">Remote Car</div>
+      <div class="tab" data-vehicle="20A">20A</div>
+      <div class="tab" data-vehicle="90A">90A</div>
+      <div class="tab" data-vehicle="KMS">KMS</div>
+      <div class="tab" data-vehicle="SRT">SRT</div>
+    </div>
 
-    <div id="vehicleDetails"></div>
+    <div id="vehicleDetails" class="info-card"></div>
+    <h3 style="margin-top:10px; text-align:center;">Crowd Level</h3>
+    <div id="crowdGraph" class="crowd-container"></div>
   </div>
 </div>
 
 <script>
   var map = L.map('map').setView([11.0168, 76.9558], 12);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(map);
 
+  // Standard location marker (Leaflet default icon)
   var marker = L.marker([11.0168, 76.9558]).addTo(map);
-  var path = L.polyline([], {color: 'red'}).addTo(map);
-
+  var path = L.polyline([], {color:'red'}).addTo(map);
   var gpsInterval;
 
-  async function updateGPS() {
-    try {
-      var channelID = "3051314";
-      var apiKey = "Y0GSME0D11BGJ53X9";
-      var latField = 1;
-      var lonField = 2;
+  var buses = {
+    "RemoteCar": {source:"Central Bus Stand", dest:"Saibaba Colony", timing:"7:30 AM - 10:30 AM", crowd:65},
+    "20A": {source:"Gandhipuram", dest:"Saibaba Colony", timing:"8:00 AM - 11:00 AM", crowd:40},
+    "90A": {source:"Town Hall", dest:"Gandhipuram", timing:"9:00 AM - 12:00 PM", crowd:80},
+    "KMS": {source:"Coimbatore Junction", dest:"Peelamedu", timing:"10:00 AM - 1:00 PM", crowd:50},
+    "SRT": {source:"Saibaba Colony", dest:"RS Puram", timing:"11:00 AM - 2:00 PM", crowd:70}
+  };
 
-      let url = `https://api.thingspeak.com/channels/${channelID}/feeds.json?results=20&api_key=${apiKey}`;
-      let response = await fetch(url);
-      let data = await response.json();
-
-      let feeds = data.feeds;
-      let coordinates = [];
-
-      feeds.forEach(feed => {
-        let lat = parseFloat(feed[`field${latField}`]);
-        let lon = parseFloat(feed[`field${lonField}`]);
-        if (!isNaN(lat) && !isNaN(lon)) coordinates.push([lat, lon]);
-      });
-
-      if (coordinates.length > 0) {
-        let latest = coordinates[coordinates.length - 1];
-        marker.setLatLng(latest);
-        map.setView(latest, 15);
-        marker.bindPopup(`<b>Lat:</b> ${latest[0]}<br><b>Lon:</b> ${latest[1]}<br><b>Signals:</b> ${coordinates.length}`).openPopup();
-        path.setLatLngs(coordinates);
-      }
-    } catch (err) {
-      console.error("GPS fetch error:", err);
-    }
+  function updateGPS() {
+    fetch(`https://api.thingspeak.com/channels/3051314/feeds.json?results=20&api_key=Y0GSME0D11BGJ53X9`)
+      .then(res => res.json())
+      .then(data => {
+        let coords = [];
+        data.feeds.forEach(feed => {
+          let lat = parseFloat(feed.field1);
+          let lon = parseFloat(feed.field2);
+          if(!isNaN(lat) && !isNaN(lon)) coords.push([lat, lon]);
+        });
+        if(coords.length > 0){
+          let latest = coords[coords.length-1];
+          marker.setLatLng(latest);
+          map.setView(latest,15);
+          marker.bindPopup(`<b>Lat:</b> ${latest[0]}<br><b>Lon:</b> ${latest[1]}<br><b>Signals:</b> ${coords.length}`).openPopup();
+          path.setLatLngs(coords);
+        }
+      }).catch(err=>console.error("GPS fetch error:",err));
   }
 
-  function startTracking() {
-    let vehicle = document.getElementById("vehicleSelect").value;
+  function showBusDetails(vehicle){
     let details = document.getElementById("vehicleDetails");
+    let crowdGraph = document.getElementById("crowdGraph");
+    let bus = buses[vehicle];
 
-    if (!vehicle) {
-      alert("Please select a vehicle!");
-      details.style.display = "none";
-      return;
-    }
+    details.innerHTML = `
+      <p><strong>Bus Name:</strong> ${vehicle}</p>
+      <p><strong>Source:</strong> ${bus.source}</p>
+      <p><strong>Destination:</strong> ${bus.dest}</p>
+      <p><strong>Timing:</strong> ${bus.timing}</p>
+    `;
 
-    details.style.display = "block";
+    crowdGraph.innerHTML = `
+      <div class="crowd-bar-vertical">
+        <div class="crowd-fill-vertical" style="height:${bus.crowd}%">${bus.crowd}%</div>
+      </div>
+    `;
 
-    if(vehicle === "RemoteCar") {
-      details.innerHTML = `<p><strong>Bus Name:</strong> Remote Car</p>
-                           <p><strong>Source:</strong> Central Bus Stand</p>
-                           <p><strong>Destination:</strong> Saibaba Colony</p>
-                           <p><strong>Timing:</strong> 7:30 AM - 10:30 AM</p>`;
-    } else if(vehicle === "20A") {
-      details.innerHTML = `<p><strong>Bus Name:</strong> 20A</p>
-                           <p><strong>Source:</strong> Gandhipuram</p>
-                           <p><strong>Destination:</strong> Saibaba Colony</p>
-                           <p><strong>Timing:</strong> 8:00 AM - 11:00 AM</p>`;
-    } else if(vehicle === "90A") {
-      details.innerHTML = `<p><strong>Bus Name:</strong> 90A</p>
-                           <p><strong>Source:</strong> Town Hall</p>
-                           <p><strong>Destination:</strong> Gandhipuram</p>
-                           <p><strong>Timing:</strong> 9:00 AM - 12:00 PM</p>`;
-    } else if(vehicle === "KMS") {
-      details.innerHTML = `<p><strong>Bus Name:</strong> KMS</p>
-                           <p><strong>Source:</strong> Coimbatore Junction</p>
-                           <p><strong>Destination:</strong> Peelamedu</p>
-                           <p><strong>Timing:</strong> 10:00 AM - 1:00 PM</p>`;
-    } else if(vehicle === "SRT") {
-      details.innerHTML = `<p><strong>Bus Name:</strong> SRT</p>
-                           <p><strong>Source:</strong> Saibaba Colony</p>
-                           <p><strong>Destination:</strong> RS Puram</p>
-                           <p><strong>Timing:</strong> 11:00 AM - 2:00 PM</p>`;
-    }
-
-    if (gpsInterval) clearInterval(gpsInterval);
+    if(gpsInterval) clearInterval(gpsInterval);
     updateGPS();
     gpsInterval = setInterval(updateGPS, 10000);
   }
+
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      showBusDetails(tab.getAttribute('data-vehicle'));
+    });
+  });
+
+  // Initialize first bus
+  showBusDetails("RemoteCar");
 </script>
 
 </body>
