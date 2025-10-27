@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Smart Public Transport Tracker</title>
 
-<!-- Leaflet CSS -->
+<!-- Leaflet CSS & JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -21,35 +21,44 @@
   }
 
   header {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(6px);
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    background-color: rgba(233, 235, 238, 0.85);
+    color: black;
+    padding: 20px 25px;
+    border-radius: 0 0 8px 8px;
     text-align: left;
-    margin: 10px 15px;
   }
-  header .emoji { font-size: 30px; margin-right: 8px; }
-  header .greeting { font-size: 36px; font-weight: bold; color: #fff; text-shadow: 0 0 6px rgba(0,0,0,0.5); }
-  header .welcome-text { font-size: 22px; margin-top: 5px; color: #fff; }
-  header .sub-text { font-size: 18px; color: #fff; }
+  header .emoji { font-size: 40px; margin-right: 10px; }
+  header .greeting { font-size: 52px; font-weight: bold; color: rgb(1,1,22); }
+  header .welcome-text { font-size: 34px; margin-top: 5px; color: black; }
+  header .sub-text { font-size: 32px; color: black; }
 
-  .main-container { display: flex; flex-wrap: wrap; height: calc(100% - 140px); gap: 15px; padding: 10px 15px 20px 15px; }
-  
+  .main-container {
+    display: flex;
+    height: calc(100% - 160px);
+    gap: 20px;
+    padding: 10px 20px 20px 20px;
+  }
+
   #leftPanel, #rightPanel {
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    background-color: white;
     padding: 15px;
   }
 
-  #leftPanel { flex: 1.7; min-width: 280px; background: rgba(255,255,255,0.1); }
-  #map { height: 100%; width: 100%; border-radius: 12px; min-height: 480px; box-shadow: inset 0 0 8px rgba(255,255,255,0.15); }
+  #map {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+  }
 
-  /* Right Panel with bus background */
+  #leftPanel {
+    flex: 1.3;
+    height: 100%;
+  }
+
   #rightPanel {
-    flex: 1;
-    min-width: 280px;
+    flex: 1.2;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -59,21 +68,23 @@
     border-radius: 12px;
     position: relative;
     padding: 15px;
-  }
-
-  #rightPanel::before { content: none; } /* remove overlay */
-
-  #rightPanel > * {
-    position: relative;
-    z-index: 1;
-    background: rgba(255,255,255,0.05); /* subtle transparent background */
-    padding: 10px;
-    border-radius: 10px;
-    margin-bottom: 10px;
     color: #fff;
   }
 
-  .tab-container { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  #rightPanel h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #1a73e8;
+    margin-bottom: 15px;
+  }
+
+  .tab-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
   .tab {
     flex: 1;
     padding: 10px;
@@ -88,18 +99,45 @@
   .tab:hover { transform: scale(1.05); }
 
   .info-card {
-    background: rgba(255,255,255,0.05); 
-    backdrop-filter: none;
+    background: rgba(255,255,255,0.05);
     border-radius: 12px;
     padding: 15px;
     margin-bottom: 12px;
-    box-shadow: none;
-    transition: transform 0.3s, opacity 0.3s;
   }
 
-  .crowd-container { display: flex; align-items: flex-end; justify-content: space-around; height: 180px; margin-top: 15px; }
-  .crowd-bar-vertical { width: 40px; height: 100%; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: flex-end; overflow: hidden; flex-direction: column; justify-content: flex-end; }
-  .crowd-fill-vertical { width: 100%; background: linear-gradient(to top,#ff9800,#e65100); border-radius: 8px 8px 0 0; display: flex; align-items: flex-start; justify-content: center; font-size: 12px; color:#fff; font-weight:bold; transition: height 0.6s ease; padding-top:2px; }
+  .crowd-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 180px;
+    margin-top: 15px;
+  }
+
+  .crowd-bar-vertical {
+    width: 40px;
+    height: 100%;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .crowd-fill-vertical {
+    width: 100%;
+    background: linear-gradient(to top,#ff9800,#e65100);
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    font-size: 12px;
+    color:#fff;
+    font-weight:bold;
+    transition: height 0.6s ease;
+    padding-top:2px;
+  }
 
   @media (max-width: 768px) {
     header .greeting { font-size: 28px; }
@@ -120,10 +158,12 @@
 </header>
 
 <div class="main-container">
+  <!-- Left Panel: Map -->
   <div id="leftPanel">
     <div id="map"></div>
   </div>
 
+  <!-- Right Panel: Info -->
   <div id="rightPanel">
     <h2>Vehicle Info</h2>
     <div class="tab-container">
@@ -141,6 +181,7 @@
 </div>
 
 <script>
+  // Initialize map
   var map = L.map('map').setView([11.0168, 76.9558], 12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
@@ -211,7 +252,7 @@
       </div>
     `;
 
-    clearTracking(); // stop any old tracking
+    clearTracking(); // stop previous tracking
 
     if (vehicle === "RemoteCar") {
       updateGPS();
@@ -227,10 +268,8 @@
     });
   });
 
-  // Default load: only map until user clicks
+  // Default load
   showBusDetails("RemoteCar");
 </script>
-
-
 </body>
 </html>
