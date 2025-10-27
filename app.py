@@ -26,7 +26,7 @@ def login():
         tokens[token] = {'email': email, 'expiry': expiry}
 
         # ✅ Use production base URL if available
-        base_url = os.environ.get("BASE_URL", "http://127.0.0.1:5000")
+        base_url = os.environ.get("BASE_URL", "https://sptms-202526-9c6k.vercel.app/")
         link = f"{base_url}/verify/{token}"
 
         send_email(email, link)
